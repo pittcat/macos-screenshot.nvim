@@ -1,0 +1,145 @@
+---
+description: "Debugging and logging guidelines for development"
+---
+
+# 调试和日志指南
+
+## 日志系统架构
+
+日志系统在 [logger.lua](mdc:lua/macos-screenshot/logger.lua) 中实现，支持多级日志和调试模式。
+
+### 日志级别
+```lua
+-- 日志级别优先级 (从低到高)
+trace   -- 最详细的跟踪信息
+debug   -- 调试信息和变量状态  
+info    -- 一般操作信息
+warn    -- 警告信息
+error   -- 错误信息
+fatal   -- 致命错误
+```
+
+### 使用原则
+
+#### 1. 日志记录位置
+```lua
+local log = require('macos-screenshot.logger')
+
+-- 函数入口
+log.trace("Function started", { params = {...} })
+
+-- 重要操作
+log.info("Screenshot taken", { path = filepath, type = capture_type })
+
+-- 错误处理
+log.error("Screenshot failed", error_message, { context = {...} })
+```
+
+#### 2. 结构化日志
+```lua
+-- 使用结构化数据
+log.screenshot_action("requested", {
+    type = capture_type,
+    base_name = base_name,
+    timestamp = os.time()
+})
+
+-- 记录系统信息
+log.log_system_info()
+```
+
+## 调试模式
+
+### 启用调试模式
+```lua
+-- 通过配置启用
+require("macos-screenshot").setup({
+    debug = {
+        auto_enable = true,
+        log_levels = {"trace", "debug", "info", "warn"},
+        save_system_info = true
+    }
+})
+
+-- 通过命令启用
+:ScreenshotDebugEnable
+```
+
+### 调试功能
+- **固定日志文件**: `/tmp/macos-screenshot-debug.log`
+- **系统信息收集**: macOS版本、Neovim版本、环境变量
+- **操作跟踪**: 详细的操作时间线和执行时间
+- **错误诊断**: 完整的错误堆栈和上下文信息
+
+## 错误处理模式
+
+### 1. 防御性编程
+```lua
+-- 检查前置条件
+if not state.initialized then
+    log.error("Plugin not initialized - call setup() first")
+    return false
+end
+
+-- 使用pcall保护
+local success, result = pcall(function()
+    return risky_operation()
+end)
+
+if not success then
+    log.error("Operation failed:", result)
+    return nil
+end
+```
+
+### 2. 用户通知
+```lua
+-- 结合日志和用户通知
+local function handle_error(message, error_details)
+    log.error(message, error_details)
+    vim.notify(message, vim.log.levels.ERROR, { title = "macOS Screenshot" })
+end
+```
+
+### 3. 优雅降级
+```lua
+-- 权限不足时的降级处理
+local has_permission, permission_error = utils.check_screen_recording_permission()
+if not has_permission then
+    log.warn("Screen recording permission issue:", permission_error)
+    vim.notify(permission_error, vim.log.levels.WARN, { title = "macOS Screenshot" })
+    -- 继续执行，但提醒用户
+end
+```
+
+## 调试命令和工具
+
+### 用户命令
+```vim
+:ScreenshotDebugEnable      " 启用调试模式
+:ScreenshotDebugDisable     " 禁用调试模式  
+:ScreenshotDebugLog         " 打开调试日志文件
+:ScreenshotDebugTail [N]    " 显示最后N行日志
+:ScreenshotDebugClear       " 清空调试日志
+:ScreenshotDebugInfo        " 显示调试信息
+```
+
+### 开发工具
+```bash
+# 实时监控日志
+tail -f /tmp/macos-screenshot-debug.log
+
+# 过滤特定类型的日志
+grep -i "error\|warn" /tmp/macos-screenshot-debug.log
+
+# 查看截图操作
+grep "screenshot_" /tmp/macos-screenshot-debug.log
+```
+
+## 最佳实践
+
+1. **记录关键路径** - 所有重要的操作路径都应该有日志
+2. **包含上下文** - 错误日志包含足够的上下文信息
+3. **避免敏感信息** - 不记录密码或敏感的用户数据
+4. **性能考虑** - 高频操作使用合适的日志级别
+5. **测试友好** - 调试模式下提供丰富的诊断信息

@@ -1,0 +1,65 @@
+---
+globs: "spec/*.lua,*_spec.lua,test*.lua"
+---
+
+# 测试指导原则
+
+## 测试结构
+
+测试文件位于 [spec/](mdc:spec/) 目录中，使用busted测试框架。
+
+### 测试文件命名
+- 功能测试：`{module_name}_spec.lua`
+- 集成测试：`integration_spec.lua`
+
+### 测试结构示例
+```lua
+describe("module_name", function()
+    local module
+    
+    before_each(function()
+        module = require('macos-screenshot.module')
+    end)
+    
+    describe("function_name", function()
+        it("should handle normal case", function()
+            -- Test implementation
+        end)
+        
+        it("should handle error case", function()
+            -- Error handling test
+        end)
+    end)
+end)
+```
+
+## 测试重点
+
+### 1. 核心功能测试
+- 截图功能的各种模式
+- 配置验证和处理
+- 文件路径生成和处理
+
+### 2. 错误处理测试
+- 无效配置处理
+- 系统权限问题
+- 文件操作失败
+
+### 3. macOS特定测试
+- 系统兼容性检查
+- screencapture命令可用性
+- 权限检查功能
+
+## 测试工具
+
+使用 [repro/](mdc:repro/) 目录中的脚本进行调试和复现：
+- [repro.lua](mdc:repro/repro.lua) - 基础复现脚本
+- [debug.lua](mdc:repro/debug.lua) - 调试辅助脚本
+
+## 测试最佳实践
+
+1. **隔离性** - 每个测试独立运行
+2. **可重复性** - 测试结果应该一致
+3. **覆盖性** - 覆盖正常和异常情况
+4. **清晰性** - 测试意图明确
+5. **效率性** - 避免不必要的系统调用

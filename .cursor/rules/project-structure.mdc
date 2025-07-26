@@ -1,0 +1,38 @@
+---
+alwaysApply: true
+---
+
+# macos-screenshot.nvim 项目结构指南
+
+这是一个专门为macOS设计的Neovim截图插件。
+
+## 核心文件结构
+
+主要入口点是 [lua/macos-screenshot/init.lua](mdc:lua/macos-screenshot/init.lua)，这是插件的主要接口文件。
+
+### 关键模块：
+
+- **[config.lua](mdc:lua/macos-screenshot/config.lua)** - 配置管理，包含默认配置和验证逻辑
+- **[screencapture.lua](mdc:lua/macos-screenshot/screencapture.lua)** - 核心截图功能，调用macOS的screencapture命令
+- **[clipboard.lua](mdc:lua/macos-screenshot/clipboard.lua)** - 剪贴板操作管理
+- **[logger.lua](mdc:lua/macos-screenshot/logger.lua)** - 日志系统，支持调试模式
+- **[utils.lua](mdc:lua/macos-screenshot/utils.lua)** - 工具函数和系统检查
+- **[health.lua](mdc:lua/macos-screenshot/health.lua)** - 健康检查功能
+
+### 插件架构原则：
+
+1. **模块化设计** - 每个功能独立为一个模块
+2. **状态管理** - 在init.lua中维护插件状态
+3. **配置驱动** - 所有行为都可通过配置控制
+4. **错误处理** - 完善的错误处理和用户通知
+5. **调试支持** - 内置调试模式和日志系统
+
+## 插件入口
+
+插件通过 [plugin/macos-screenshot.lua](mdc:plugin/macos-screenshot.lua) 自动加载，用户主要通过：
+- `require("macos-screenshot").setup()` 进行配置
+- `:Screenshot` 和 `:ScreenshotSelect` 命令使用功能
+
+## 类型定义
+
+类型定义在 [types.lua](mdc:lua/macos-screenshot/types.lua) 中，使用lua-language-server的注解格式。

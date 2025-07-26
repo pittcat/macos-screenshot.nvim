@@ -1,0 +1,77 @@
+---
+description: "macOS specific development guidelines"
+---
+
+# macOS特定开发指南
+
+## 系统要求
+
+### 版本兼容性
+- **最低要求**: macOS 10.15 (Catalina)
+- **推荐版本**: macOS 11.0+ (Big Sur)
+- **测试覆盖**: 支持当前和前两个主要版本
+
+### 系统集成
+
+#### 1. screencapture命令
+```lua
+-- 检查screencapture可用性
+local function is_screencapture_available()
+    return vim.fn.executable('screencapture') == 1
+end
+
+-- 基本用法
+screencapture [options] [file]
+```
+
+#### 2. 系统权限
+- **Screen Recording权限** - 必需，用于截图功能
+- **Accessibility权限** - 某些高级功能可能需要
+- 权限检查在 [utils.lua](mdc:lua/macos-screenshot/utils.lua) 中实现
+
+#### 3. 文件系统集成
+```lua
+-- 使用Finder显示文件
+open -R /path/to/file
+
+-- 使用默认应用打开文件
+open /path/to/file
+```
+
+## 开发注意事项
+
+### 1. 路径处理
+- 使用 `vim.fn.expand()` 处理 `~` 路径
+- 处理空格和特殊字符
+- 支持相对路径和绝对路径
+
+### 2. 权限处理
+- 优雅降级 - 权限不足时给出清晰提示
+- 提供权限设置指导
+- 在 [health.lua](mdc:lua/macos-screenshot/health.lua) 中检查权限状态
+
+### 3. 系统通知
+```lua
+-- 使用Neovim通知系统
+vim.notify(message, vim.log.levels.INFO, { title = "macOS Screenshot" })
+
+-- 避免使用系统通知，保持在Neovim环境内
+```
+
+### 4. 多显示器支持
+- screencapture自动处理多显示器
+- 考虑不同分辨率和缩放比例
+- 测试在不同显示器配置下的行为
+
+## 调试和故障排除
+
+### 常见问题
+1. **权限被拒绝** - 引导用户到系统偏好设置
+2. **命令不存在** - 检查macOS版本兼容性
+3. **路径问题** - 处理特殊字符和权限
+4. **性能问题** - 优化文件操作和系统调用
+
+### 调试工具
+- 使用 [logger.lua](mdc:lua/macos-screenshot/logger.lua) 的调试模式
+- 系统信息收集和报告
+- 健康检查功能全面诊断

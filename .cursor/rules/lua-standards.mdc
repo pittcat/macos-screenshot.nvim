@@ -1,0 +1,76 @@
+---
+globs: "*.lua"
+---
+
+# Lua代码标准和最佳实践
+
+## 代码风格
+
+### 1. 模块结构
+```lua
+local M = {}
+
+-- Module dependencies
+local dependency = require('module.dependency')
+
+-- Constants and defaults
+local DEFAULTS = {}
+
+-- Private functions
+local function private_function()
+end
+
+-- Public functions
+function M.public_function()
+end
+
+return M
+```
+
+### 2. 类型注解
+使用lua-language-server的注解格式：
+```lua
+---@class MyClass
+---@field field_name string
+
+---@param param_name string Parameter description
+---@return boolean success Whether operation succeeded
+function M.my_function(param_name)
+end
+```
+
+### 3. 错误处理
+- 使用pcall保护可能失败的操作
+- 提供有意义的错误消息
+- 使用vim.notify向用户显示重要信息
+
+### 4. 配置验证
+使用vim.validate验证配置参数：
+```lua
+vim.validate {
+    param_name = { value, "string" },
+    numeric_param = { value, "number" }
+}
+```
+
+## 项目特定约定
+
+### 1. 日志记录
+- 使用 [logger.lua](mdc:lua/macos-screenshot/logger.lua) 进行日志记录
+- 日志级别：trace, debug, info, warn, error, fatal
+- 在调试模式下记录详细信息
+
+### 2. 配置管理
+- 所有配置通过 [config.lua](mdc:lua/macos-screenshot/config.lua) 管理
+- 提供合理的默认值
+- 验证用户输入
+
+### 3. macOS集成
+- 检查macOS环境兼容性
+- 处理系统权限要求
+- 使用适当的系统调用
+
+### 4. 异步操作
+- 使用vim.schedule处理回调
+- 避免阻塞UI操作
+- 提供操作状态反馈

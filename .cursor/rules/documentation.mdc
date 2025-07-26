@@ -1,0 +1,91 @@
+---
+globs: "*.md,doc/*.txt,docs/*.md"
+---
+
+# 文档规范
+
+## 文档结构
+
+### 主要文档文件
+- [README.md](mdc:README.md) - 英文主文档
+- [README_ZH.md](mdc:README_ZH.md) - 中文文档
+- [docs/usage-zh.md](mdc:docs/usage-zh.md) - 中文使用指南
+- [doc/macos-screenshot.txt](mdc:doc/macos-screenshot.txt) - Vim帮助文档
+
+### 文档维护原则
+
+#### 1. 双语支持
+- 英文为主要文档语言
+- 中文文档保持同步更新
+- 重要功能说明提供双语版本
+
+#### 2. 结构一致性
+```markdown
+# 标题
+简短描述
+
+## ✨ 特性
+功能亮点列表
+
+## 📋 系统要求
+系统兼容性信息
+
+## 📦 安装
+安装说明和配置示例
+
+## ⚙️ 配置
+详细配置选项
+
+## 🎮 使用
+命令和API使用示例
+
+## 🔧 健康检查
+故障排除指南
+
+## 🐛 调试模式
+调试功能说明
+```
+
+#### 3. 代码示例
+- 提供完整可运行的配置示例
+- 包含常见用例的代码片段
+- 使用适当的语法高亮
+
+#### 4. 版本更新
+- [CHANGELOG.md](mdc:CHANGELOG.md) 记录版本变更
+- 重大更新同步到README
+- API变更及时更新文档
+
+## Vim帮助文档
+
+### 格式要求
+- 使用标准vim help格式
+- 提供标签和交叉引用
+- 包含命令、函数和配置的完整文档
+
+### 内容组织
+```
+CONTENTS                                    *macos-screenshot-contents*
+
+1. Introduction                             |macos-screenshot-intro|
+2. Requirements                             |macos-screenshot-requirements|
+3. Installation                             |macos-screenshot-installation|
+4. Configuration                            |macos-screenshot-configuration|
+5. Commands                                 |macos-screenshot-commands|
+6. API                                      |macos-screenshot-api|
+```
+
+## 文档质量标准
+
+1. **准确性** - 与代码实现保持一致
+2. **完整性** - 覆盖所有主要功能
+3. **清晰性** - 易于理解和跟进
+4. **实用性** - 提供实际可用的示例
+5. **及时性** - 随功能更新而更新
+
+## 示例和用例
+
+- 基础使用场景
+- 高级配置示例
+- 故障排除指南
+- 最佳实践建议
