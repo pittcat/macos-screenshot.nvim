@@ -1,0 +1,368 @@
+*macos-screenshot.txt*    Professional macOS Screenshot Plugin for Neovim
+
+==============================================================================
+CONTENTS                                        *macos-screenshot-contents*
+
+    1. Introduction ...................... |macos-screenshot-introduction|
+    2. Requirements ...................... |macos-screenshot-requirements|
+    3. Installation ...................... |macos-screenshot-installation|
+    4. Setup ............................. |macos-screenshot-setup|
+    5. Commands .......................... |macos-screenshot-commands|
+    6. Configuration ..................... |macos-screenshot-configuration|
+    7. API ............................... |macos-screenshot-api|
+    8. Health Check ...................... |macos-screenshot-health|
+    9. Troubleshooting ................... |macos-screenshot-troubleshooting|
+    10. License .......................... |macos-screenshot-license|
+
+==============================================================================
+1. INTRODUCTION                             *macos-screenshot-introduction*
+
+macOS Screenshot Plugin provides seamless screenshot capture integration
+within Neovim, designed specifically for macOS users. Built using the
+base.nvim template with professional development practices.
+
+Features:
+  • Multiple capture modes (full, window, selection, interactive)
+  • Automatic clipboard integration with path formatting options
+  • Intelligent file naming and organization
+  • Comprehensive logging system with structured output
+  • Extensive configuration options and keybindings
+  • Complete health check system for troubleshooting
+  • Professional error handling and user feedback
+
+==============================================================================
+2. REQUIREMENTS                             *macos-screenshot-requirements*
+
+System Requirements:
+  • macOS 10.15 (Catalina) or later
+  • Neovim 0.7+ (0.10+ recommended for best performance)
+  • Screen Recording permission granted to Terminal/Neovim
+  • screencapture command (built into macOS)
+
+Optional Dependencies:
+  • pbcopy command (built into macOS) for clipboard functionality
+  • fswatch for advanced file monitoring (fallback available)
+
+==============================================================================
+3. INSTALLATION                             *macos-screenshot-installation*
+
+lazy.nvim: >
+    {
+        "your-username/macos-screenshot.nvim",
+        config = function()
+            require("macos-screenshot").setup({
+                save_path = "~/Documents/Screenshots",
+                copy_path_format = "home"
+            })
+        end,
+        cmd = { "Screenshot", "ScreenshotFull", "ScreenshotWindow" },
+        keys = {
+            { "<leader>ss", "<cmd>Screenshot<cr>", desc = "Screenshot" }
+        }
+    }
+<
+
+packer.nvim: >
+    use {
+        "your-username/macos-screenshot.nvim",
+        config = function()
+            require("macos-screenshot").setup()
+        end
+    }
+<
+
+==============================================================================
+4. SETUP                                           *macos-screenshot-setup*
+
+Basic setup with default configuration: >
+    require("macos-screenshot").setup()
+<
+
+Custom configuration: >
+    require("macos-screenshot").setup({
+        save_path = "~/Documents/Screenshots",
+        filename_format = "%Y%m%d_%H%M%S",
+        include_cursor = false,
+        copy_path_format = "home",
+        keybindings = {
+            enabled = true,
+            screenshot = "<leader>ss",
+            full_screen = "<leader>sf"
+        }
+    })
+<
+
+The plugin will automatically check for macOS environment and required
+permissions during setup.
+
+==============================================================================
+5. COMMANDS                                      *macos-screenshot-commands*
+
+Primary Commands:
+
+:Screenshot [type] [basename]                                  *:Screenshot*
+    Take a screenshot with specified type and optional basename.
+    Types: interactive (default), full, window, selection
+    
+    Examples: >
+        :Screenshot
+        :Screenshot full
+        :Screenshot window my_window
+        :Screenshot selection ui_mockup
+<
+
+Specialized Commands:
+
+:ScreenshotFull                                            *:ScreenshotFull*
+    Take a full screen screenshot.
+
+:ScreenshotWindow                                        *:ScreenshotWindow*
+    Take a window screenshot (click to select window).
+
+:ScreenshotSelection                                  *:ScreenshotSelection*
+    Take a selection screenshot (drag to select area).
+
+:ScreenshotInteractive                              *:ScreenshotInteractive*
+    Take an interactive screenshot (spacebar for full screen,
+    click for window, drag for selection).
+
+Utility Commands:
+
+:ScreenshotOpenLast                                    *:ScreenshotOpenLast*
+    Open the last screenshot in the default application.
+
+:ScreenshotRevealLast                                *:ScreenshotRevealLast*
+    Reveal the last screenshot in Finder.
+
+:ScreenshotInfo                                            *:ScreenshotInfo*
+    Display information about the last screenshot.
+
+Setup Command:
+
+:MacosScreenshotSetup [options]                    *:MacosScreenshotSetup*
+    Setup the plugin with basic key=value options.
+    Example: >
+        :MacosScreenshotSetup save_path=~/Pictures include_cursor=true
+<
+
+==============================================================================
+6. CONFIGURATION                           *macos-screenshot-configuration*
+
+Default Configuration: >
+    {
+        -- Basic settings
+        save_path = "~/Desktop/Screenshots",
+        filename_format = "%Y%m%d_%H%M%S",
+        include_cursor = false,
+        play_sound = false,
+        copy_path_format = "absolute",
+        monitor_screenshots = true,
+        
+        -- Logging configuration
+        log = {
+            level = "info",
+            use_console = true,
+            use_file = true,
+            highlights = true,
+            float_precision = 0.01
+        },
+        
+        -- Keybinding configuration
+        keybindings = {
+            enabled = true,
+            screenshot = "<leader>ss",
+            full_screen = "<leader>sf",
+            window = "<leader>sw",
+            selection = "<leader>sr"
+        }
+    }
+<
+
+Configuration Options:
+
+save_path                                        *macos-screenshot-save_path*
+    Directory where screenshots are saved.
+    Default: "~/Desktop/Screenshots"
+    Type: string
+
+filename_format                            *macos-screenshot-filename_format*
+    Filename format using strftime patterns.
+    Default: "%Y%m%d_%H%M%S"
+    Type: string
+
+include_cursor                                *macos-screenshot-include_cursor*
+    Whether to include the mouse cursor in screenshots.
+    Default: false
+    Type: boolean
+
+play_sound                                      *macos-screenshot-play_sound*
+    Whether to play the camera sound when taking screenshots.
+    Default: false
+    Type: boolean
+
+copy_path_format                            *macos-screenshot-copy_path_format*
+    Format for paths copied to clipboard.
+    Options: "absolute", "relative", "home"
+    Default: "absolute"
+    Type: string
+
+monitor_screenshots                    *macos-screenshot-monitor_screenshots*
+    Whether to monitor the screenshot directory for new files.
+    Default: true
+    Type: boolean
+
+log                                                    *macos-screenshot-log*
+    Logging configuration table.
+    See |macos-screenshot-logging| for details.
+
+keybindings                                    *macos-screenshot-keybindings*
+    Keybinding configuration table.
+    See |macos-screenshot-keybindings| for details.
+
+Logging Configuration:                           *macos-screenshot-logging*
+
+level       Log level: "trace", "debug", "info", "warn", "error", "fatal"
+use_console Enable console output (boolean)
+use_file    Enable file output (boolean)
+highlights  Enable syntax highlighting (boolean)
+
+Keybinding Configuration:                    *macos-screenshot-keybindings*
+
+enabled     Enable automatic keybinding setup (boolean)
+screenshot  Key for interactive screenshot (string)
+full_screen Key for full screen screenshot (string)
+window      Key for window screenshot (string)
+selection   Key for selection screenshot (string)
+
+==============================================================================
+7. API                                               *macos-screenshot-api*
+
+Lua API Functions:
+
+require("macos-screenshot").setup({opts})          *macos-screenshot.setup()*
+    Initialize the plugin with configuration options.
+    Returns: boolean (success)
+
+require("macos-screenshot").take_screenshot({type}, {basename})
+                                            *macos-screenshot.take_screenshot()*
+    Take a screenshot with specified type and optional basename.
+    Parameters:
+        type: "interactive", "full", "window", or "selection"
+        basename: optional base filename
+    Returns: none (asynchronous)
+
+require("macos-screenshot").get_last_screenshot()
+                                      *macos-screenshot.get_last_screenshot()*
+    Get the path of the last screenshot taken.
+    Returns: string|nil
+
+require("macos-screenshot").open_last_screenshot()
+                                     *macos-screenshot.open_last_screenshot()*
+    Open the last screenshot in the default application.
+    Returns: none
+
+require("macos-screenshot").reveal_last_screenshot()
+                                   *macos-screenshot.reveal_last_screenshot()*
+    Reveal the last screenshot in Finder.
+    Returns: none
+
+require("macos-screenshot").show_last_screenshot_info()
+                                *macos-screenshot.show_last_screenshot_info()*
+    Display information about the last screenshot.
+    Returns: none
+
+require("macos-screenshot").is_initialized()    *macos-screenshot.is_initialized()*
+    Check if the plugin has been initialized.
+    Returns: boolean
+
+require("macos-screenshot").get_config()          *macos-screenshot.get_config()*
+    Get the current plugin configuration.
+    Returns: table
+
+require("macos-screenshot").get_state()            *macos-screenshot.get_state()*
+    Get the current plugin state (for debugging).
+    Returns: table
+
+require("macos-screenshot").log                        *macos-screenshot.log*
+    Access to the logging interface.
+    Available methods: trace, debug, info, warn, error, fatal
+
+==============================================================================
+8. HEALTH CHECK                                 *macos-screenshot-health*
+
+Run the health check to verify plugin functionality: >
+    :checkhealth macos-screenshot
+<
+
+The health check verifies:
+  • macOS environment detection
+  • Neovim version compatibility
+  • screencapture command availability
+  • Screen Recording permissions
+  • Save directory accessibility and permissions
+  • Clipboard functionality
+  • Logging system operation
+  • Configuration validity
+
+Common Health Check Issues:
+
+Screen Recording Permission:
+    Grant permission in System Preferences > Security & Privacy > 
+    Privacy > Screen Recording. Add your terminal application and restart.
+
+Directory Permissions:
+    Ensure the save directory exists and is writable. The plugin will
+    attempt to create directories automatically.
+
+screencapture Command:
+    This should be available on all macOS systems. If missing, check
+    your system integrity.
+
+==============================================================================
+9. TROUBLESHOOTING                       *macos-screenshot-troubleshooting*
+
+Common Issues and Solutions:
+
+Plugin fails to initialize:
+  • Verify you're running on macOS
+  • Check Neovim version (0.7+ required)
+  • Run :checkhealth macos-screenshot
+
+Screenshots not saving:
+  • Check Screen Recording permissions
+  • Verify save directory exists and is writable
+  • Check available disk space
+
+Clipboard not working:
+  • Verify pbcopy command is available
+  • Test with :lua vim.fn.setreg("+", "test")
+  • Check clipboard access permissions
+
+Keybindings not working:
+  • Verify keybindings.enabled = true in config
+  • Check for conflicting keybindings
+  • Try manual commands first
+
+Permission denied errors:
+  • Grant Screen Recording permission
+  • Check file system permissions
+  • Restart terminal/Neovim after permission changes
+
+Debug Mode:
+Enable debug logging: >
+    require("macos-screenshot").setup({
+        log = { level = "debug", use_console = true }
+    })
+<
+
+View log file location: >
+    :lua print(vim.fn.stdpath('data') .. '/macos-screenshot.nvim.log')
+<
+
+==============================================================================
+10. LICENSE                                     *macos-screenshot-license*
+
+MIT License. See LICENSE file for details.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

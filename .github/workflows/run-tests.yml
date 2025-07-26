@@ -1,0 +1,58 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: macos-latest  # macOS-specific plugin
+    strategy:
+      matrix:
+        neovim-version: ['0.10.0', 'nightly']
+        
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Neovim
+      uses: rhysd/action-setup-vim@v1
+      with:
+        neovim: true
+        version: ${{ matrix.neovim-version }}
+    
+    - name: Setup Lua
+      uses: leafo/gh-actions-lua@v10
+      with:
+        luaVersion: "5.1"
+    
+    - name: Setup LuaRocks
+      uses: leafo/gh-actions-luarocks@v4
+    
+    - name: Install dependencies
+      run: |
+        luarocks install busted
+        luarocks install nlua
+    
+    - name: Run tests
+      run: busted --verbose
+    
+    - name: Test plugin loading
+      run: |
+        nvim --headless -c "lua require('macos-screenshot').setup({})" \
+             -c "lua print('Plugin loaded successfully')" \
+             -c "quit"
+    
+    - name: Run health check
+      run: |
+        nvim --headless -c "lua require('macos-screenshot').setup({})" \
+             -c "checkhealth macos-screenshot" \
+             -c "quit"
+    
+    - name: Test screenshot commands
+      run: |
+        nvim --headless -c "lua require('macos-screenshot').setup({save_path='/tmp/test_screenshots', log={use_console=false, use_file=false}})" \
+             -c "lua require('macos-screenshot.screencapture').is_available() and print('screencapture available')" \
+             -c "quit"
