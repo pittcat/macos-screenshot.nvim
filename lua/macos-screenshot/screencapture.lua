@@ -89,7 +89,10 @@ function M.capture(opts)
     
     -- 使用 vim.system 进行异步执行（Neovim 0.10+）
     if vim.system then
-        vim.system(cmd, { text = false }, function(result)
+        vim.system(cmd, { 
+            text = false,
+            detach = true  -- Allow process to run independently
+        }, function(result)
             if result.code == 0 then
                 -- 延迟检查文件是否已创建（用户可能取消了操作）
                 vim.defer_fn(function()
@@ -130,6 +133,7 @@ function M.capture(opts)
     else
         -- 旧版本 Neovim 的回退方案
         local job_id = vim.fn.jobstart(cmd, {
+            detach = 1,  -- Allow process to run independently
             on_exit = function(_, exit_code)
                 if exit_code == 0 then
                     vim.defer_fn(function()
