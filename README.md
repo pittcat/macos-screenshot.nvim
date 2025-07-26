@@ -325,6 +325,18 @@ require("macos-screenshot").setup({
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
+## 🔗 Integration with Claude Code
+
+This plugin pairs perfectly with [claudecode.nvim](https://github.com/coder/claudecode.nvim) to bridge the gap where Claude Code CLI doesn't support direct image pasting like Cursor. 
+
+With this integration:
+- Take screenshots directly in Neovim using `macos-screenshot.nvim`
+- Screenshots are automatically saved and paths copied to clipboard
+- Paste the screenshot paths in Claude Code conversations
+- Maintain seamless AI-assisted development workflow
+
+Perfect complement for developers using Claude Code who need visual context sharing capabilities.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
