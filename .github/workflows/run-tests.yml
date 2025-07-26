@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest  # macOS-specific plugin
     strategy:
       matrix:
-        neovim-version: ['0.10.0', 'nightly']
+        neovim-version: ['v0.10.0', 'nightly']
         
     steps:
     - name: Checkout code

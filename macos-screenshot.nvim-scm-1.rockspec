@@ -4,7 +4,7 @@ local spec = {
   name = plugin_name,
   version = "scm-1",
   source = {
-    url = "git://github.com/your-username/" .. plugin_name,
+    url = "git://github.com/pittcat/" .. plugin_name,
   },
   description = {
     summary = "Professional macOS screenshot management plugin for Neovim",
@@ -17,7 +17,7 @@ local spec = {
       Built using base.nvim template with professional development practices,
       comprehensive testing, and complete documentation.
     ]],
-    homepage = "https://github.com/your-username/" .. plugin_name,
+    homepage = "https://github.com/pittcat/" .. plugin_name,
     license = "MIT",
   },
   dependencies = {
