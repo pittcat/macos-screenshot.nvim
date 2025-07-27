@@ -79,8 +79,11 @@ describe("macos-screenshot.nvim", function()
         end)
         
         it("should reject invalid configuration", function()
+            -- Test config module directly to bypass pcall in main setup
+            local config = require('macos-screenshot.config')
+            
             assert.has_error(function()
-                screenshot.setup({
+                config.setup({
                     save_path = 123, -- invalid type
                     log = { use_console = false, use_file = false }
                 })
@@ -88,8 +91,11 @@ describe("macos-screenshot.nvim", function()
         end)
         
         it("should reject invalid copy_path_format", function()
+            -- Test config module directly to bypass pcall in main setup
+            local config = require('macos-screenshot.config')
+            
             assert.has_error(function()
-                screenshot.setup({
+                config.setup({
                     save_path = test_dir,
                     copy_path_format = "invalid_format",
                     log = { use_console = false, use_file = false }
@@ -240,7 +246,7 @@ describe("macos-screenshot.nvim", function()
             
             local size_str = utils.get_human_readable_size(test_file)
             assert.is_string(size_str)
-            assert.is_true(string.match(size_str, "%d+%.?%d* %w+"))
+            assert.is_not_nil(string.match(size_str, "%d+%.?%d* %w+"))
         end)
         
         it("should handle non-existent files", function()
@@ -304,7 +310,7 @@ describe("macos-screenshot configuration module", function()
             save_path = "~/test_screenshots"
         })
         
-        assert.is_true(string.match(opts.save_path, "^/"))
-        assert.is_false(string.match(opts.save_path, "^~"))
+        assert.is_not_nil(string.match(opts.save_path, "^/"))
+        assert.is_nil(string.match(opts.save_path, "^~"))
     end)
 end)

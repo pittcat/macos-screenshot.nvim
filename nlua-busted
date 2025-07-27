@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# nlua-busted: 包装脚本，让 busted 使用 nlua 作为解释器
+
+# 如果没有指定目录参数，默认添加 spec/ 目录
+has_dir=false
+for arg in "$@"; do
+    if [[ "$arg" != -* ]] && [[ -d "$arg" || "$arg" == *"_spec.lua" ]]; then
+        has_dir=true
+        break
+    fi
+done
+
+if [ "$has_dir" = false ]; then
+    exec nlua run-busted-nlua.lua "spec/" "$@"
+else
+    exec nlua run-busted-nlua.lua "$@"
+fi

@@ -1,8 +1,10 @@
 return {
   _all = {
     coverage = false,
-    lpath = "lua/?.lua;lua/?/init.lua",
-    lua = "nlua",
+    lpath = "lua/?.lua;lua/?/init.lua;spec/?.lua",
+    lua = "./nlua-busted",  -- 使用我们的包装脚本
+    helper = nil,  -- 不需要 mock，nlua 提供真实的 vim API
+    ROOT = { "spec/" },  -- 默认测试目录
   },
   default = {
     verbose = true,

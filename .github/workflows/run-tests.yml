@@ -37,7 +37,7 @@ jobs:
         luarocks install nlua
     
     - name: Run tests
-      run: busted --verbose
+      run: ./nlua-busted --verbose
     
     - name: Test plugin loading
       run: |

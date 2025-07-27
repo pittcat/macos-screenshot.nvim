@@ -93,7 +93,7 @@ end
 ---Check if configuration is valid
 ---@return boolean
 function M.is_valid()
-    return M.options and M.options.save_path and M.options.filename_format
+    return M.options and M.options.save_path and M.options.filename_format and true or false
 end
 
 return M
