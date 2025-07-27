@@ -166,40 +166,56 @@ function M.take_screenshot(capture_type, base_name)
         timestamp = os.time()
     })
     
-    screencapture.take_screenshot(capture_type, base_name, function(success, path_or_error)
-        if success then
-            state.last_screenshot = path_or_error
+    screencapture.take_screenshot(capture_type, base_name, {
+        success = function(path)
+            state.last_screenshot = path
             
             -- Copy path to clipboard
-            clipboard.copy_screenshot_path(path_or_error, function(clipboard_success)
+            clipboard.copy_screenshot_path(path, function(clipboard_success)
                 -- Simple completion hint
-                local filename = vim.fn.fnamemodify(path_or_error, ':t')
+                local filename = vim.fn.fnamemodify(path, ':t')
                 vim.schedule(function()
                     vim.cmd('echo "Screenshot completed: ' .. filename .. '. Path copied to clipboard"')
                 end)
                 
                 log.screenshot_action("completed", {
                     type = capture_type,
-                    path = path_or_error,
+                    path = path,
                     clipboard_success = clipboard_success,
-                    file_info = utils.get_screenshot_info(path_or_error)
+                    file_info = utils.get_screenshot_info(path)
                 })
             end)
-        else
-            log.screenshot_error("capture_failed", path_or_error, {
+        end,
+        cancel = function(message)
+            log.screenshot_action("cancelled", {
+                type = capture_type,
+                base_name = base_name,
+                message = message
+            })
+            
+            vim.schedule(function()
+                vim.notify(
+                    "Screenshot cancelled",
+                    vim.log.levels.INFO,
+                    { title = "macOS Screenshot" }
+                )
+            end)
+        end,
+        error = function(error_msg)
+            log.screenshot_error("capture_failed", error_msg, {
                 type = capture_type,
                 base_name = base_name
             })
             
             vim.schedule(function()
                 vim.notify(
-                    "Screenshot failed: " .. path_or_error,
+                    "Screenshot failed: " .. error_msg,
                     vim.log.levels.ERROR,
                     { title = "macOS Screenshot" }
                 )
             end)
         end
-    end)
+    })
 end
 
 ---Get last screenshot path

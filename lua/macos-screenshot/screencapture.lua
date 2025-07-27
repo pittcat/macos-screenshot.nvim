@@ -112,7 +112,9 @@ function M.capture(opts)
                             output = opts.output
                         })
                         
-                        if opts.on_error then
+                        if opts.on_cancel then
+                            opts.on_cancel("Screenshot was cancelled by user")
+                        elseif opts.on_error then
                             opts.on_error("Screenshot was cancelled by user")
                         end
                     end
@@ -152,7 +154,9 @@ function M.capture(opts)
                                 output = opts.output
                             })
                             
-                            if opts.on_error then
+                            if opts.on_cancel then
+                                opts.on_cancel("Screenshot was cancelled by user")
+                            elseif opts.on_error then
                                 opts.on_error("Screenshot was cancelled by user")
                             end
                         end
@@ -192,7 +196,7 @@ end
 ---Take screenshot with specified type
 ---@param capture_type? "interactive"|"full"|"window"|"selection" 截图类型
 ---@param base_name? string 基础文件名
----@param callback? fun(success: boolean, path_or_error: string) 完成回调
+---@param callback? fun(success: boolean, path_or_error: string)|{success: fun(path: string), cancel: fun(message: string), error: fun(error_msg: string)} 完成回调
 function M.take_screenshot(capture_type, base_name, callback)
     capture_type = capture_type or 'interactive'
     
@@ -204,17 +208,44 @@ function M.take_screenshot(capture_type, base_name, callback)
         vim.fn.mkdir(dir, "p")
     end
     
+    -- 检查回调格式：新格式（表）或旧格式（函数）
+    local is_new_format = type(callback) == "table"
+    
     M.capture({
         type = capture_type,
         output = filepath,
         on_success = function(path)
             if callback then
-                callback(true, path)
+                if is_new_format then
+                    if callback.success then
+                        callback.success(path)
+                    end
+                else
+                    callback(true, path)
+                end
+            end
+        end,
+        on_cancel = function(message)
+            if callback then
+                if is_new_format then
+                    if callback.cancel then
+                        callback.cancel(message)
+                    end
+                else
+                    -- 向后兼容：旧格式将取消作为失败处理
+                    callback(false, message)
+                end
             end
         end,
         on_error = function(err)
             if callback then
-                callback(false, err)
+                if is_new_format then
+                    if callback.error then
+                        callback.error(err)
+                    end
+                else
+                    callback(false, err)
+                end
             end
         end
     })
