@@ -77,12 +77,12 @@ end
 
 ---Create user commands
 function M._create_commands()
-    -- Main command: full screen screenshot
+    -- Main command: window selection screenshot
     vim.api.nvim_create_user_command('Screenshot', function()
         M.take_screenshot('full')
-    end, { desc = 'Take full screen screenshot' })
+    end, { desc = 'Take screenshot with window selection' })
     
-    -- Main command: selection screenshot
+    -- Selection screenshot command
     vim.api.nvim_create_user_command('ScreenshotSelect', function()
         M.take_screenshot('selection')
     end, { desc = 'Take selection screenshot' })
@@ -129,11 +129,11 @@ function M._setup_keybindings()
     local cfg = config.get()
     local keybindings = cfg.keybindings
     
-    -- Full screen screenshot keybinding
+    -- Window selection screenshot keybinding
     if keybindings.full_screen then
         vim.keymap.set('n', keybindings.full_screen, function()
             M.take_screenshot('full')
-        end, { desc = 'Full screen screenshot', silent = true })
+        end, { desc = 'Window selection screenshot', silent = true })
     end
     
     -- Selection screenshot keybinding
@@ -145,7 +145,7 @@ function M._setup_keybindings()
 end
 
 ---Take screenshot with specified type
----@param capture_type? "interactive"|"full"|"window"|"selection" Screenshot type
+---@param capture_type? "interactive"|"full"|"fullscreen"|"window"|"selection" Screenshot type
 ---@param base_name? string Base filename (optional)
 function M.take_screenshot(capture_type, base_name)
     if not state.initialized then
@@ -157,7 +157,16 @@ function M.take_screenshot(capture_type, base_name)
     capture_type = capture_type or 'interactive'
     
     -- Simple status bar hint
-    local action_text = capture_type == 'full' and 'Taking full screen screenshot...' or 'Please select screenshot area...'
+    local action_text
+    if capture_type == 'full' or capture_type == 'window' then
+        action_text = 'Please select a window to screenshot...'
+    elseif capture_type == 'fullscreen' then
+        action_text = 'Taking fullscreen screenshot...'
+    elseif capture_type == 'selection' then
+        action_text = 'Please select screenshot area...'
+    else
+        action_text = 'Taking screenshot...'
+    end
     vim.cmd('echo "' .. action_text .. '"')
     
     log.screenshot_action("requested", {

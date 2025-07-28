@@ -4,7 +4,7 @@ A powerful and simple macOS screenshot plugin for Neovim.
 
 ## ✨ Features
 
-- 🖼️ **Simple Screenshots** - Supports full screen and selection screenshots (two core modes)
+- 🖼️ **Two Core Screenshot Modes** - Window selection and area selection screenshots
 - 📋 **Smart Clipboard** - Automatically copies screenshot path to system clipboard
 - 📁 **File Management** - Smart naming, directory organization, duplicate detection
 - 📊 **Professional Logging** - Integrated logging system with structured logs
@@ -43,7 +43,7 @@ A powerful and simple macOS screenshot plugin for Neovim.
             
             keybindings = {
                 enabled = true,
-                full_screen = "<leader>ss",       -- Full screen screenshot
+                full_screen = "<leader>ss",       -- Window selection screenshot
                 selection = "<leader>sp"          -- Selection screenshot
             }
         })
@@ -56,7 +56,7 @@ A powerful and simple macOS screenshot plugin for Neovim.
     },
     
     keys = {
-        { "<leader>ss", "<cmd>Screenshot<cr>", desc = "Full screen screenshot" },
+        { "<leader>ss", "<cmd>Screenshot<cr>", desc = "Window selection screenshot" },
         { "<leader>sp", "<cmd>ScreenshotSelect<cr>", desc = "Selection screenshot" },
     },
     
@@ -100,7 +100,7 @@ require("macos-screenshot").setup({
     -- Keybinding configuration
     keybindings = {
         enabled = true,                   -- Whether to enable keybindings
-        full_screen = "<leader>ss",       -- Full screen screenshot
+        full_screen = "<leader>ss",       -- Window selection screenshot
         selection = "<leader>sp"          -- Selection screenshot
     }
 })
@@ -112,14 +112,14 @@ require("macos-screenshot").setup({
 
 ```vim
 " Core screenshot commands
-:Screenshot                    " Full screen screenshot
-:ScreenshotSelect             " Selection screenshot
+:Screenshot                    " Window selection screenshot (click to select a window)
+:ScreenshotSelect             " Selection screenshot (drag to select area)
 ```
 
 ### Keybindings (Default)
 
-- `<leader>ss` - Full screen screenshot
-- `<leader>sp` - Selection screenshot
+- `<leader>ss` - Window selection screenshot (click to select a window)
+- `<leader>sp` - Selection screenshot (drag to select area)
 
 ### Lua API
 
@@ -127,7 +127,7 @@ require("macos-screenshot").setup({
 local screenshot = require("macos-screenshot")
 
 -- Screenshots
-screenshot.take_screenshot("full")              -- Full screen screenshot
+screenshot.take_screenshot("full")              -- Window selection screenshot
 screenshot.take_screenshot("selection")         -- Selection screenshot
 
 -- Status check

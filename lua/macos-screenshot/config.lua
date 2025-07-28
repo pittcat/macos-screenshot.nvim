@@ -29,7 +29,7 @@ local defaults = {
     -- Keybinding configuration
     keybindings = {
         enabled = true,
-        full_screen = "<leader>ss",    -- Full screen screenshot
+        full_screen = "<leader>ss",     -- Window selection screenshot
         selection = "<leader>sp"        -- Selection screenshot (partial)
     }
 }

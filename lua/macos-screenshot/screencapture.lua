@@ -23,7 +23,10 @@ local function build_command(opts)
     if opts.type == "interactive" then
         table.insert(cmd, "-i")
     elseif opts.type == "full" then
-        -- 全屏截图无需额外参数
+        -- 全屏截图改为带窗口选择
+        table.insert(cmd, "-w")
+    elseif opts.type == "fullscreen" then
+        -- 真正的全屏截图，无需额外参数
     elseif opts.type == "window" then
         table.insert(cmd, "-w")
     elseif opts.type == "selection" then
@@ -194,7 +197,7 @@ function M.capture(opts)
 end
 
 ---Take screenshot with specified type
----@param capture_type? "interactive"|"full"|"window"|"selection" 截图类型
+---@param capture_type? "interactive"|"full"|"fullscreen"|"window"|"selection" 截图类型
 ---@param base_name? string 基础文件名
 ---@param callback? fun(success: boolean, path_or_error: string)|{success: fun(path: string), cancel: fun(message: string), error: fun(error_msg: string)} 完成回调
 function M.take_screenshot(capture_type, base_name, callback)
@@ -260,7 +263,7 @@ end
 ---Get supported capture types
 ---@return string[]
 function M.get_capture_types()
-    return { 'interactive', 'full', 'window', 'selection' }
+    return { 'interactive', 'full', 'fullscreen', 'window', 'selection' }
 end
 
 return M
